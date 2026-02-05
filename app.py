@@ -7,19 +7,19 @@ from email.message import EmailMessage
 app = Flask(__name__)
 CORS(app)
 
-# 📧 Email config from Render environment variables
+# 📧 Email credentials from Render Environment Variables
 EMAIL_USER = os.environ.get("EMAIL_USER")
 EMAIL_PASS = os.environ.get("EMAIL_PASS")
 EMAIL_TO   = os.environ.get("EMAIL_TO")
 
 def send_email_alert(message):
     if not EMAIL_USER or not EMAIL_PASS or not EMAIL_TO:
-        print("Email environment variables not set")
+        print("❌ Email env variables not set")
         return
 
     try:
         msg = EmailMessage()
-        msg["Subject"] = "📩 New Anonymous Message"
+        msg["Subject"] = "📩 New Anonymous Message from Portfolio"
         msg["From"] = EMAIL_USER
         msg["To"] = EMAIL_TO
         msg.set_content(
@@ -30,8 +30,10 @@ def send_email_alert(message):
             server.login(EMAIL_USER, EMAIL_PASS)
             server.send_message(msg)
 
+        print("✅ Email sent successfully")
+
     except Exception as e:
-        print("Email error:", e)
+        print("❌ Email error:", e)
 
 @app.route("/")
 def home():
@@ -43,10 +45,11 @@ def send_message():
         data = request.get_json(force=True)
         message = data.get("message")
 
+        # Save message
         with open("messages.txt", "a", encoding="utf-8") as f:
             f.write(message.strip() + "\n---\n")
 
-        # 📧 SEND EMAIL
+        # 📧 Send email alert
         send_email_alert(message)
 
         return jsonify({
