@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mohmmad Shahnwaz | Portfolio</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<!-- 🌗 Theme Toggle -->
+<div class="theme-toggle" onclick="toggleTheme()">
+    🌙 / ☀️
+</div>
+
+
+<div class="container fade-in">
+
+<header>
+    <h1>Mohmmad Shahnwaz</h1>
+    <p>MCA | Lab Instructor | AI & Cybersecurity Researcher</p>
+</header>
+
+<section class="fade-in">
+    <h2>About Me</h2>
+    <p>
+        Computer Science professional with strong interests in
+        Artificial Intelligence, Cybersecurity, and Academic Research.
+        Currently preparing for UGC NET JRF and PhD research.
+    </p>
+</section>
+
+<section class="fade-in">
+    <h2>Skills</h2>
+    <div class="skills">
+        <span>🐍 Python</span>
+        <span>🌐 PHP</span>
+        <span>⚙️ JavaScript</span>
+        <span>🧠 AI</span>
+        <span>🔐 Cybersecurity</span>
+        <span>💻 Operating Systems</span>
+    </div>
+</section>
+
+<section class="fade-in">
+    <h2>Send Me an Anonymous Message</h2>
+
+    <textarea id="message" placeholder="Write your message anonymously..."></textarea>
+    <button onclick="sendMessage()">Send Message</button>
+
+    <p id="status"></p>
+</section>
+
+<footer class="fade-in">
+    <p>© 2026 Mohmmad Shahnwaz</p>
+</footer>
+
+</div>
+
+<script>
+/* 🌗 Theme Toggle */
+function toggleTheme() {
+    document.body.classList.toggle("light");
+}
+
+/* ✨ Fade-in on scroll */
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+        }
+    });
+});
+
+document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
+
+/* 📩 Message sender (UNCHANGED BACKEND LOGIC) */
+function sendMessage() {
+    const msg = document.getElementById("message").value;
+    const status = document.getElementById("status");
+
+    fetch("/send-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+    })
+    .then(res => res.json())
+    .then(data => {
+        status.innerText = data.message;
+        status.style.color = "lightgreen";
+        document.getElementById("message").value = "";
+    })
+    .catch(() => {
+        status.innerText = "Error sending message";
+        status.style.color = "red";
+    });
+}
+
+</script>
+
+</body>
+</html>
+
