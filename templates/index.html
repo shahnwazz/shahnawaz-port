@@ -75,30 +75,38 @@ const observer = new IntersectionObserver(entries => {
 
 document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
 
-/* 📩 Message sender (UNCHANGED BACKEND LOGIC) */
+/* 📩 Message sender (FIXED FOR RENDER) */
 function sendMessage() {
     const msg = document.getElementById("message").value;
     const status = document.getElementById("status");
 
-    fetch("/send-message", {
+    status.innerText = "Sending...";
+    status.style.color = "white";
+
+    fetch("https://shahnawaz-port.onrender.com/send-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg })
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+    })
     .then(data => {
         status.innerText = data.message;
         status.style.color = "lightgreen";
         document.getElementById("message").value = "";
     })
-    .catch(() => {
+    .catch(err => {
+        console.error(err);
         status.innerText = "Error sending message";
         status.style.color = "red";
     });
 }
-
 </script>
+
 
 </body>
 </html>
+
 
