@@ -13,30 +13,27 @@ EMAIL_PASS = os.environ.get("EMAIL_PASS")
 EMAIL_TO   = os.environ.get("EMAIL_TO")
 
 def send_email_alert(message):
-    print("📧 Email debug:")
-    print("EMAIL_USER:", EMAIL_USER)
-    print("EMAIL_TO:", EMAIL_TO)
-    print("EMAIL_PASS length:", len(EMAIL_PASS) if EMAIL_PASS else "None")
-
-    if not EMAIL_USER or not EMAIL_PASS or not EMAIL_TO:
-        print("❌ Email env variables not set properly")
-        return
-
     try:
+        if not EMAIL_USER or not EMAIL_PASS or not EMAIL_TO:
+            print("❌ Email env variables missing")
+            return
+
         msg = EmailMessage()
         msg["Subject"] = "📩 New Anonymous Message from Portfolio"
         msg["From"] = EMAIL_USER
         msg["To"] = EMAIL_TO
         msg.set_content(f"Message:\n\n{message}")
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(EMAIL_USER, EMAIL_PASS)
-            server.send_message(msg)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10)
+        server.login(EMAIL_USER, EMAIL_PASS)
+        server.send_message(msg)
+        server.quit()
 
         print("✅ Email sent successfully")
 
     except Exception as e:
-        print("❌ Email error:", e)
+        print("❌ Email failed (ignored):", repr(e))
+
         
 @app.route("/")
 def home():
@@ -70,4 +67,5 @@ def send_message():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
 
