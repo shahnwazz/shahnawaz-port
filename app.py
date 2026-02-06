@@ -45,12 +45,13 @@ def send_message():
         data = request.get_json(force=True)
         message = data.get("message")
 
-        # Save message
         with open("messages.txt", "a", encoding="utf-8") as f:
             f.write(message.strip() + "\n---\n")
 
-        # 📧 Send email alert
-        send_email_alert(message)
+        try:
+            send_email_alert(message)
+        except Exception:
+            pass
 
         return jsonify({
             "status": "success",
@@ -58,14 +59,16 @@ def send_message():
         }), 200
 
     except Exception as e:
-        print("ERROR:", e)
+        print("SEND ERROR:", e)
         return jsonify({
             "status": "error",
             "message": "Server error"
         }), 500
 
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
 
 
